@@ -1,7 +1,7 @@
 import numpy as np
 import wfdb
 from wfdb import processing
-from _denoising import normalise_and_denoise_ecg
+from ._denoising import normalise_and_denoise_ecg
 
 def segment_beats(ecg_signal, r_peaks):
     """

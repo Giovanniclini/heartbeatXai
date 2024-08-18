@@ -17,19 +17,19 @@ if __name__ == '__main__':
     #MITBIH Arrythmia database
     root = 'data/mit-bih-arrhythmia-database-1.0.0/'
     test_records = ["234", "233", "232", "231", "230"]
-    results_mitbih = extract_data(root, record_list_mitbih, 'MLII')
+    results_mitbih = extract_data(root, record_list_mitbih, 'MLII', True, test_records)
     results_mitbih_noise = extract_data(root, record_list_mitbih, 'MLII', False, test_records)
 
     #INCART database
     root = 'data/files/'
     test_records = ["I75", "I74", "I73", "I72", "I71", "I70"]
-    results_stpter = extract_data(root, record_list_stpter, 'II')
+    results_stpter = extract_data(root, record_list_stpter, 'II', True, test_records)
     results_stpter_noise = extract_data(root, record_list_stpter, 'II', False, test_records)
 
     #MITBIH Supraventricular Arrythmia database
     root = 'data/mit-bih-supraventricular-arrhythmia-database-1.0.0/'
     test_records = ["894", "893", "892", "891", "890"]
-    results_supra = extract_data(root, record_list_supra, 'ECG2')
+    results_supra = extract_data(root, record_list_supra, 'ECG2', True, test_records)
     results_supra_noise = extract_data(root, record_list_supra, 'ECG2', False, test_records)
 
     all_beats = np.concatenate((results_mitbih['filtered_beats_train'], results_stpter['filtered_beats_train'], results_supra['filtered_beats_train'],
@@ -129,13 +129,13 @@ if __name__ == '__main__':
     all_resampled_post_rr = np.concatenate((post_rr_0, post_rr_1_downsampled, post_rr_2, post_rr_3, post_rr_4), axis=0)
     all_resampled_avg_rr = np.concatenate((avg_rr_0, avg_rr_1_downsampled, avg_rr_2, avg_rr_3, avg_rr_4), axis=0)
 
-    with open('ecg_training.csv', 'w', newline='') as f:
+    with open('data\ecg_training.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         for row in data_generator(all_padded_resampled_beats, all_padded_resampled_labels.reshape(-1, 1),
                                 all_resampled_pre_rr, all_resampled_post_rr, all_resampled_avg_rr):
             writer.writerow(row)
 
-    with open('ecg_test.csv', 'w', newline='') as f:
+    with open('data\ecg_test.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         for row in test_data_generator(padded_beats_test, labels_test.reshape(-1, 1),
                                     all_pre_rr_test, all_post_rr_test, all_avg_rr_test):
