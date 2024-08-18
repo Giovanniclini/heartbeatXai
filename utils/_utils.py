@@ -2,6 +2,7 @@ import numpy as np
 import wfdb
 from wfdb import processing
 from ._denoising import normalise_and_denoise_ecg
+import csv
 
 def segment_beats(ecg_signal, r_peaks):
     """
@@ -176,3 +177,22 @@ def data_generator(beats, labels, pre_rr, post_rr, avg_rr):
 def test_data_generator(beats, labels, pre_rr, post_rr, avg_rr):
         for beat, label, pre, post, avg in zip(beats, labels, pre_rr, post_rr, avg_rr):
             yield np.hstack((beat, pre, post, avg, label))
+
+def load_data_from_csv(file_path):
+    beats = []
+    labels = []
+    pre_rr = []
+    post_rr = []
+    avg_rr = []
+
+    with open(file_path, 'r') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            row = np.array(row, dtype=float)
+            beats.append(row[:-4])
+            pre_rr.append(row[-4])
+            post_rr.append(row[-3])
+            avg_rr.append(row[-2])
+            labels.append(row[-1])
+
+    return np.array(beats), np.array(labels), np.array(pre_rr), np.array(post_rr), np.array(avg_rr)
