@@ -40,12 +40,16 @@ def remove_baseline_wander(signal, fs):
 def smooth_signal(signal, window_length=5, polyorder=2):
     return savgol_filter(signal, window_length=window_length, polyorder=polyorder)
 
-def normalise_and_denoise_ecg(signal, fs):
-    # Apply DTCWT denoising
-    denoised_signal = dtcwt_denoise(signal)
+def normalise_and_denoise_ecg(signal, fs, denoise=True):
+    
+    if denoise:
+        # Apply DTCWT denoising
+        denoised_signal = dtcwt_denoise(signal)
 
-    # Remove baseline wander
-    final_signal = remove_baseline_wander(denoised_signal, fs)
+        # Remove baseline wander
+        final_signal = remove_baseline_wander(denoised_signal, fs)
+    else:
+        final_signal = signal
 
     # Apply MinMax scaling
     scaler = MinMaxScaler(feature_range=(-1, 1))
