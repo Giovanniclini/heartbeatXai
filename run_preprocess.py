@@ -1,8 +1,6 @@
 from utils._utils import extract_data, calculate_length_thresholds, filter_by_classes_and_length, data_generator, test_data_generator
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-import tensorflow
-from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.sequence import pad_sequences # type: ignore
 from sklearn.utils import resample
 import numpy as np
 import wfdb
