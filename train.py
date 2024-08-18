@@ -14,7 +14,6 @@ if __name__ == '__main__':
 
     # Load training and test data
     all_padded_resampled_beats, all_padded_resampled_labels, all_resampled_pre_rr, all_resampled_post_rr, all_resampled_avg_rr = load_data_from_csv(os.path.join('data', 'ecg_training.csv'))
-    padded_beats_test, labels_test, all_pre_rr_test, all_post_rr_test, all_avg_rr_test = load_data_from_csv(os.path.join('data', 'ecg_test.csv'))
 
     # Combine the ECG beats with the RR features for the split
     X_combined = np.hstack((all_padded_resampled_beats,
