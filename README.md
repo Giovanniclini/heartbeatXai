@@ -1,2 +1,2 @@
 # heartbeatXai
-Project to apply deep learning to ECG detection and classification
+Project to apply explainable AI to ECG detection and classification
