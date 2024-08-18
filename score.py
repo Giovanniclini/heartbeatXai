@@ -26,8 +26,8 @@ if __name__ == '__main__':
         device = torch.device("cpu")
         print("GPU not available, using CPU instead.")
 
-    input_size = 128  # This matches the output size from the CNN layers before concatenation
-    rr_feature_size = 3  # We have 3 RR features: Pre-RR, Post-RR, and Avg-RR
+    input_size = 128
+    rr_feature_size = 3
     num_classes = 4
 
     model = CNN_LSTM_Model(input_size=input_size, rr_feature_size=rr_feature_size, num_classes=num_classes)
@@ -35,10 +35,10 @@ if __name__ == '__main__':
 
     criterion = nn.CrossEntropyLoss()
 
-    model.load_state_dict(torch.load(os.path.join('checkpoints', 'best_model.pth')))
+    model.load_state_dict(torch.load(os.path.join('checkpoints', 'best_model.pth'), map_location=device))
+
     model.eval()
 
-    # Initialize variables for detailed inspection
     correct_predictions = 0
     total_predictions = 0
     test_loss = 0.0
@@ -51,7 +51,6 @@ if __name__ == '__main__':
 
     with torch.no_grad():
         for inputs, labels, rr_features in test_loader:
-            # Move inputs and labels to the appropriate device (GPU or CPU)
             inputs, labels, rr_features = inputs.to(device), labels.to(device), rr_features.to(device)
 
             # Forward pass
@@ -59,29 +58,23 @@ if __name__ == '__main__':
             loss = criterion(outputs, labels)
             test_loss += loss.item()
 
-            # Get the predicted class
             _, preds = torch.max(outputs, 1)
             correct_predictions += torch.sum(preds == labels.data)
             total_predictions += labels.size(0)
 
-            # Store predictions and labels for later analysis
             all_preds.extend(preds.cpu().numpy())
             all_labels.extend(labels.cpu().numpy())
 
-    # Calculate overall test accuracy and loss
     test_loss = test_loss / len(test_loader)
     test_acc = correct_predictions.double() / total_predictions
 
-    # Convert lists to numpy arrays for easier analysis
     all_preds = np.array(all_preds)
     all_labels = np.array(all_labels)
 
-    # Confusion Matrix
     conf_matrix = confusion_matrix(all_labels, all_preds)
     conf_matrix_df = pd.DataFrame(conf_matrix, index=[f"Class {i}" for i in range(conf_matrix.shape[0])],
                                 columns=[f"Class {i}" for i in range(conf_matrix.shape[1])])
 
-    # Plot Confusion Matrix
     plt.figure(figsize=(10, 7))
     sns.heatmap(conf_matrix_df, annot=True, fmt="d", cmap="Blues")
     plt.title('Confusion Matrix')
@@ -89,7 +82,6 @@ if __name__ == '__main__':
     plt.xlabel('Predicted')
     plt.show()
 
-    # Per-Class Accuracy
     class_accuracy = conf_matrix.diagonal() / conf_matrix.sum(axis=1)
     class_accuracy_df = pd.DataFrame({
         "Class": [f"Class {i}" for i in range(len(class_accuracy))],
@@ -98,11 +90,9 @@ if __name__ == '__main__':
     print("\nPer-Class Accuracy:")
     print(class_accuracy_df.to_string(index=False))
 
-    # Detailed Classification Report
     report = classification_report(all_labels, all_preds, target_names=[f"Class {i}" for i in range(conf_matrix.shape[0])])
     print("\nClassification Report:")
     print(report)
 
-    # Overall Test Metrics
     print(f'Test Loss: {test_loss:.4f}')
     print(f'Test Accuracy: {test_acc:.4f}')
