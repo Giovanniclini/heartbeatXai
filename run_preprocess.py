@@ -5,6 +5,7 @@ from sklearn.utils import resample
 import numpy as np
 import wfdb
 import csv
+import os
 
 if __name__ == '__main__':
 
@@ -127,13 +128,13 @@ if __name__ == '__main__':
     all_resampled_post_rr = np.concatenate((post_rr_0, post_rr_1_downsampled, post_rr_2, post_rr_3, post_rr_4), axis=0)
     all_resampled_avg_rr = np.concatenate((avg_rr_0, avg_rr_1_downsampled, avg_rr_2, avg_rr_3, avg_rr_4), axis=0)
 
-    with open('data\ecg_training.csv', 'w', newline='') as f:
+    with open(os.path.join('data', 'ecg_training.csv'), 'w', newline='') as f:
         writer = csv.writer(f)
         for row in data_generator(all_padded_resampled_beats, all_padded_resampled_labels.reshape(-1, 1),
                                 all_resampled_pre_rr, all_resampled_post_rr, all_resampled_avg_rr):
             writer.writerow(row)
 
-    with open('data\ecg_test.csv', 'w', newline='') as f:
+    with open(os.path.join('data', 'ecg_test.csv'), 'w', newline='') as f:
         writer = csv.writer(f)
         for row in test_data_generator(padded_beats_test, labels_test.reshape(-1, 1),
                                     all_pre_rr_test, all_post_rr_test, all_avg_rr_test):

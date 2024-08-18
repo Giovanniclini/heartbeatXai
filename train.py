@@ -8,12 +8,13 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from model.model import CNN_LSTM_Model
+import os
 
 if __name__ == '__main__':
 
     # Load training and test data
-    all_padded_resampled_beats, all_padded_resampled_labels, all_resampled_pre_rr, all_resampled_post_rr, all_resampled_avg_rr = load_data_from_csv('data\ecg_training.csv')
-    padded_beats_test, labels_test, all_pre_rr_test, all_post_rr_test, all_avg_rr_test = load_data_from_csv('data\ecg_test.csv')
+    all_padded_resampled_beats, all_padded_resampled_labels, all_resampled_pre_rr, all_resampled_post_rr, all_resampled_avg_rr = load_data_from_csv(os.path.join('data', 'ecg_training.csv'))
+    padded_beats_test, labels_test, all_pre_rr_test, all_post_rr_test, all_avg_rr_test = load_data_from_csv(os.path.join('data', 'ecg_test.csv'))
 
     # Combine the ECG beats with the RR features for the split
     X_combined = np.hstack((all_padded_resampled_beats,
@@ -83,7 +84,7 @@ if __name__ == '__main__':
     patience = 10
     epochs_no_improve = 0
     early_stop = False
-    model_save_path = 'checkpoints/best_model.pth'
+    model_save_path = os.path.join('checkpoints', 'best_model.pth')
 
     for epoch in range(num_epochs):
         if early_stop:
