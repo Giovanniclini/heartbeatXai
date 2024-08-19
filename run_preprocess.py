@@ -51,7 +51,7 @@ if __name__ == '__main__':
     all_avg_rr_test = np.concatenate((results_mitbih_noise['avg_rr_past_test'], results_stpter_noise['avg_rr_past_test'], results_supra_noise['avg_rr_past_test']), axis=0)
 
     # Desired classes
-    desired_classes = ['N', 'S', 'V', 'F']
+    desired_classes = ['N', 'S', 'V']
 
     # Define the percentage thresholds
     min_percentile = 5  # 5th percentile
@@ -80,48 +80,86 @@ if __name__ == '__main__':
     all_padded_beats = pad_sequences(all_beats, padding='post', dtype='float32')
     padded_beats_test = pad_sequences(beats_test, padding='post', dtype='float32')
 
+    class_counts = {
+        0: len(all_labels[all_labels == 0]),
+        1: len(all_labels[all_labels == 1]),
+        2: len(all_labels[all_labels == 2])
+    }
+
+    max_class = max(class_counts, key=class_counts.get)
+    max_class_count = class_counts[max_class]
+
+    target_sample_count = min(class_counts.values())
+
     X_label_0 = all_padded_beats[all_labels == 0]
     X_label_1 = all_padded_beats[all_labels == 1]
     X_label_2 = all_padded_beats[all_labels == 2]
-    X_label_3 = all_padded_beats[all_labels == 3]
 
     pre_rr_0 = all_pre_rr[all_labels == 0]
     pre_rr_1 = all_pre_rr[all_labels == 1]
     pre_rr_2 = all_pre_rr[all_labels == 2]
-    pre_rr_3 = all_pre_rr[all_labels == 3]
 
     post_rr_0 = all_post_rr[all_labels == 0]
     post_rr_1 = all_post_rr[all_labels == 1]
     post_rr_2 = all_post_rr[all_labels == 2]
-    post_rr_3 = all_post_rr[all_labels == 3]
 
     avg_rr_0 = all_avg_rr[all_labels == 0]
     avg_rr_1 = all_avg_rr[all_labels == 1]
     avg_rr_2 = all_avg_rr[all_labels == 2]
-    avg_rr_3 = all_avg_rr[all_labels == 3]
 
-    X_label_1_downsampled, y_label_1_downsampled, pre_rr_1_downsampled, post_rr_1_downsampled, avg_rr_1_downsampled = resample(
-        X_label_1,
-        np.full(len(X_label_1), 1),
-        pre_rr_1,
-        post_rr_1,
-        avg_rr_1,
-        replace=False,
-        n_samples=60000,
-        random_state=42
-    )
+    if max_class == 0:
+        X_label_0_downsampled, y_label_0_downsampled, pre_rr_0_downsampled, post_rr_0_downsampled, avg_rr_0_downsampled = resample(
+            X_label_0,
+            np.full(len(X_label_0), 0),
+            pre_rr_0,
+            post_rr_0,
+            avg_rr_0,
+            replace=False,
+            n_samples=target_sample_count,
+            random_state=42
+        )
+    else:
+        X_label_0_downsampled, y_label_0_downsampled, pre_rr_0_downsampled, post_rr_0_downsampled, avg_rr_0_downsampled = X_label_0, np.full(len(X_label_0), 0), pre_rr_0, post_rr_0, avg_rr_0
 
-    all_padded_resampled_beats = np.concatenate((X_label_0, X_label_1_downsampled, X_label_2, X_label_3), axis=0)
+    if max_class == 1:
+        X_label_1_downsampled, y_label_1_downsampled, pre_rr_1_downsampled, post_rr_1_downsampled, avg_rr_1_downsampled = resample(
+            X_label_1,
+            np.full(len(X_label_1), 1),
+            pre_rr_1,
+            post_rr_1,
+            avg_rr_1,
+            replace=False,
+            n_samples=target_sample_count,
+            random_state=42
+        )
+    else:
+        X_label_1_downsampled, y_label_1_downsampled, pre_rr_1_downsampled, post_rr_1_downsampled, avg_rr_1_downsampled = X_label_1, np.full(len(X_label_1), 1), pre_rr_1, post_rr_1, avg_rr_1
+
+    if max_class == 2:
+        X_label_2_downsampled, y_label_2_downsampled, pre_rr_2_downsampled, post_rr_2_downsampled, avg_rr_2_downsampled = resample(
+            X_label_2,
+            np.full(len(X_label_2), 2),
+            pre_rr_2,
+            post_rr_2,
+            avg_rr_2,
+            replace=False,
+            n_samples=target_sample_count,
+            random_state=42
+        )
+    else:
+        X_label_2_downsampled, y_label_2_downsampled, pre_rr_2_downsampled, post_rr_2_downsampled, avg_rr_2_downsampled = X_label_2, np.full(len(X_label_2), 2), pre_rr_2, post_rr_2, avg_rr_2
+
+
+    all_padded_resampled_beats = np.concatenate((X_label_0_downsampled, X_label_1_downsampled, X_label_2_downsampled), axis=0)
     all_padded_resampled_labels = np.concatenate((
-        np.full(len(X_label_0), 0),
+        y_label_0_downsampled,
         y_label_1_downsampled,
-        np.full(len(X_label_2), 2),
-        np.full(len(X_label_3), 3)
+        y_label_2_downsampled
     ), axis=0)
 
-    all_resampled_pre_rr = np.concatenate((pre_rr_0, pre_rr_1_downsampled, pre_rr_2, pre_rr_3), axis=0)
-    all_resampled_post_rr = np.concatenate((post_rr_0, post_rr_1_downsampled, post_rr_2, post_rr_3), axis=0)
-    all_resampled_avg_rr = np.concatenate((avg_rr_0, avg_rr_1_downsampled, avg_rr_2, avg_rr_3), axis=0)
+    all_resampled_pre_rr = np.concatenate((pre_rr_0_downsampled, pre_rr_1_downsampled, pre_rr_2_downsampled), axis=0)
+    all_resampled_post_rr = np.concatenate((post_rr_0_downsampled, post_rr_1_downsampled, post_rr_2_downsampled), axis=0)
+    all_resampled_avg_rr = np.concatenate((avg_rr_0_downsampled, avg_rr_1_downsampled, avg_rr_2_downsampled), axis=0)
 
     with open(os.path.join('data', 'ecg_training.csv'), 'w', newline='') as f:
         writer = csv.writer(f)

@@ -65,13 +65,12 @@ if __name__ == '__main__':
     # Initialize model, criterion, and optimizer
     input_size = 128
     rr_feature_size = 3
-    num_classes = 4
+    num_classes = 3
 
     model = CNN_LSTM_Model(input_size=input_size, rr_feature_size=rr_feature_size, num_classes=num_classes)
     model.to(device)
 
-    alpha_values = [2.0, 0.8, 1.2, 1.0]
-    criterion = FocalLoss(alpha=alpha_values, gamma=2)
+    criterion = FocalLoss()
 
     optimizer = optim.Adam(model.parameters(), lr=0.00001)
 

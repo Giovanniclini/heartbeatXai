@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     input_size = 128
     rr_feature_size = 3
-    num_classes = 4
+    num_classes = 3
 
     model = CNN_LSTM_Model(input_size=input_size, rr_feature_size=rr_feature_size, num_classes=num_classes)
     model.to(device)
