@@ -278,4 +278,4 @@ def map_to_general_groups(label_vector):
         "/": "Q",  
         "Q": "Q"   
     }
-    return [general_group_mapping.get(beat, "Q") for beat in label_vector]
+    return np.array([general_group_mapping.get(beat, "Q") for beat in label_vector])
