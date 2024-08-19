@@ -3,9 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class FocalLoss(nn.Module):
-    def __init__(self, alpha=None, gamma=2, reduction='mean'):
+    def __init__(self, alpha=None, gamma=2, reduction='mean', num_classes = 3):
         super(FocalLoss, self).__init__()
-        self.alpha = torch.tensor(alpha) if alpha is not None else torch.tensor(1.0)
+        self.alpha = torch.tensor(alpha) if alpha is not None else torch.ones(num_classes)
         self.gamma = gamma
         self.reduction = reduction
 
