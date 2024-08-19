@@ -84,25 +84,21 @@ if __name__ == '__main__':
     X_label_1 = all_padded_beats[all_labels == 1]
     X_label_2 = all_padded_beats[all_labels == 2]
     X_label_3 = all_padded_beats[all_labels == 3]
-    X_label_4 = all_padded_beats[all_labels == 4]
 
     pre_rr_0 = all_pre_rr[all_labels == 0]
     pre_rr_1 = all_pre_rr[all_labels == 1]
     pre_rr_2 = all_pre_rr[all_labels == 2]
     pre_rr_3 = all_pre_rr[all_labels == 3]
-    pre_rr_4 = all_pre_rr[all_labels == 4]
 
     post_rr_0 = all_post_rr[all_labels == 0]
     post_rr_1 = all_post_rr[all_labels == 1]
     post_rr_2 = all_post_rr[all_labels == 2]
     post_rr_3 = all_post_rr[all_labels == 3]
-    post_rr_4 = all_post_rr[all_labels == 4]
 
     avg_rr_0 = all_avg_rr[all_labels == 0]
     avg_rr_1 = all_avg_rr[all_labels == 1]
     avg_rr_2 = all_avg_rr[all_labels == 2]
     avg_rr_3 = all_avg_rr[all_labels == 3]
-    avg_rr_4 = all_avg_rr[all_labels == 4]
 
     X_label_1_downsampled, y_label_1_downsampled, pre_rr_1_downsampled, post_rr_1_downsampled, avg_rr_1_downsampled = resample(
         X_label_1,
@@ -115,18 +111,17 @@ if __name__ == '__main__':
         random_state=42
     )
 
-    all_padded_resampled_beats = np.concatenate((X_label_0, X_label_1_downsampled, X_label_2, X_label_3, X_label_4), axis=0)
+    all_padded_resampled_beats = np.concatenate((X_label_0, X_label_1_downsampled, X_label_2, X_label_3), axis=0)
     all_padded_resampled_labels = np.concatenate((
         np.full(len(X_label_0), 0),
         y_label_1_downsampled,
         np.full(len(X_label_2), 2),
-        np.full(len(X_label_3), 3),
-        np.full(len(X_label_4), 4)
+        np.full(len(X_label_3), 3)
     ), axis=0)
 
-    all_resampled_pre_rr = np.concatenate((pre_rr_0, pre_rr_1_downsampled, pre_rr_2, pre_rr_3, pre_rr_4), axis=0)
-    all_resampled_post_rr = np.concatenate((post_rr_0, post_rr_1_downsampled, post_rr_2, post_rr_3, post_rr_4), axis=0)
-    all_resampled_avg_rr = np.concatenate((avg_rr_0, avg_rr_1_downsampled, avg_rr_2, avg_rr_3, avg_rr_4), axis=0)
+    all_resampled_pre_rr = np.concatenate((pre_rr_0, pre_rr_1_downsampled, pre_rr_2, pre_rr_3), axis=0)
+    all_resampled_post_rr = np.concatenate((post_rr_0, post_rr_1_downsampled, post_rr_2, post_rr_3), axis=0)
+    all_resampled_avg_rr = np.concatenate((avg_rr_0, avg_rr_1_downsampled, avg_rr_2, avg_rr_3), axis=0)
 
     with open(os.path.join('data', 'ecg_training.csv'), 'w', newline='') as f:
         writer = csv.writer(f)
