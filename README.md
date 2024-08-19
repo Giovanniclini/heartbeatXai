@@ -93,8 +93,9 @@ To install the required dependencies for this project, use the `requirements.txt
 
 ## Usage
 
-1. **Preprocess the data**: Run `run_preprocess.py` to perform segmentation, denoising, and normalization of the raw data.
-2. **Train the model**: Run `train.py` to train the model using the preprocessed data.
+0. **Data setup:** Make sure to download and save data from the three databases cited at the beginning of the readme in the data directory of the project and to change the paths in the preprocess script accordingly. 
+1. **Preprocess the data**: Run `run_preprocess.py` to perform segmentation, denoising, and normalization of the raw data. This script will generate two csv files: ecg_training.csv and ecg_test.csv containing preprocessed data.
+2. **Train the model**: Run `train.py` to train the model using the preprocessed data. This script will read the data generated in the previous step.
 3. **Test the model**: Use `score.py` to evaluate the model on the test set.
 
 ## References
