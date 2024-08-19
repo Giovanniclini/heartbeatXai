@@ -89,7 +89,7 @@ if __name__ == '__main__':
     max_class = max(class_counts, key=class_counts.get)
     max_class_count = class_counts[max_class]
 
-    target_sample_count = min(class_counts.values())
+    target_sample_count = 70000
 
     X_label_0 = all_padded_beats[all_labels == 0]
     X_label_1 = all_padded_beats[all_labels == 1]
