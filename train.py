@@ -8,6 +8,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from model.model import CNN_LSTM_Model
+from model.focal_loss import FocalLoss
 import os
 
 if __name__ == '__main__':
@@ -69,7 +70,9 @@ if __name__ == '__main__':
     model = CNN_LSTM_Model(input_size=input_size, rr_feature_size=rr_feature_size, num_classes=num_classes)
     model.to(device)
 
-    criterion = nn.CrossEntropyLoss()
+    alpha_values = [2.0, 0.8, 1.2, 1.0]
+    criterion = FocalLoss(alpha=alpha_values, gamma=2)
+
     optimizer = optim.Adam(model.parameters(), lr=0.00001)
 
     scheduler = optim.lr_scheduler.CyclicLR(optimizer, base_lr=0.00001, max_lr=0.0001)

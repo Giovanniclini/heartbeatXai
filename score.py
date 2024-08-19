@@ -3,12 +3,12 @@ from dataset.ECGDatasetHandler import ECGDataset
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
-from torch import nn
 from model.model import CNN_LSTM_Model
 from sklearn.metrics import confusion_matrix, classification_report
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+from model.focal_loss import FocalLoss
 import os
 
 if __name__ == '__main__':
@@ -33,7 +33,8 @@ if __name__ == '__main__':
     model = CNN_LSTM_Model(input_size=input_size, rr_feature_size=rr_feature_size, num_classes=num_classes)
     model.to(device)
 
-    criterion = nn.CrossEntropyLoss()
+    alpha_values = [2.0, 0.8, 1.2, 1.0]
+    criterion = FocalLoss(alpha=alpha_values, gamma=2)
 
     model.load_state_dict(torch.load(os.path.join('checkpoints', 'best_model.pth'), map_location=device))
 
