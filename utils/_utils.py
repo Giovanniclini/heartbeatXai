@@ -2,6 +2,7 @@ import numpy as np
 import wfdb
 from wfdb import processing
 from ._denoising import normalise_and_denoise_ecg
+from sklearn.utils import resample
 import csv
 
 def segment_beats(ecg_signal, r_peaks):
@@ -196,3 +197,85 @@ def load_data_from_csv(file_path):
             labels.append(row[-1])
 
     return np.array(beats), np.array(labels), np.array(pre_rr), np.array(post_rr), np.array(avg_rr)
+
+def downsample_classes(all_padded_beats, all_labels, all_pre_rr, all_post_rr, all_avg_rr, target_sample_count=None):
+
+    unique, counts = np.unique(all_labels, return_counts=True)
+    class_counts = dict(zip(unique, counts))
+
+    sorted_class_counts = sorted(class_counts.values(), reverse=True)
+    if target_sample_count is None:
+        target_sample_count = sorted_class_counts[1]
+    
+    max_class = max(class_counts, key=class_counts.get)
+    
+    downsampled_data = {}
+
+    for label in unique:
+        X_label = all_padded_beats[all_labels == label]
+        pre_rr_label = all_pre_rr[all_labels == label]
+        post_rr_label = all_post_rr[all_labels == label]
+        avg_rr_label = all_avg_rr[all_labels == label]
+        
+        if max_class == label:
+            X_label_downsampled, y_label_downsampled, pre_rr_downsampled, post_rr_downsampled, avg_rr_downsampled = resample(
+                X_label,
+                np.full(len(X_label), label),
+                pre_rr_label,
+                post_rr_label,
+                avg_rr_label,
+                replace=False,
+                n_samples=target_sample_count,
+                random_state=42
+            )
+        else:
+            X_label_downsampled, y_label_downsampled, pre_rr_downsampled, post_rr_downsampled, avg_rr_downsampled = (
+                X_label, 
+                np.full(len(X_label), label), 
+                pre_rr_label, 
+                post_rr_label, 
+                avg_rr_label
+            )
+        
+        downsampled_data[label] = {
+            'X': X_label_downsampled,
+            'y': y_label_downsampled,
+            'pre_rr': pre_rr_downsampled,
+            'post_rr': post_rr_downsampled,
+            'avg_rr': avg_rr_downsampled
+        }
+    
+    all_padded_resampled_beats = np.concatenate([downsampled_data[label]['X'] for label in unique], axis=0)
+    all_padded_resampled_labels = np.concatenate([downsampled_data[label]['y'] for label in unique], axis=0)
+    all_resampled_pre_rr = np.concatenate([downsampled_data[label]['pre_rr'] for label in unique], axis=0)
+    all_resampled_post_rr = np.concatenate([downsampled_data[label]['post_rr'] for label in unique], axis=0)
+    all_resampled_avg_rr = np.concatenate([downsampled_data[label]['avg_rr'] for label in unique], axis=0)
+    
+    return (all_padded_resampled_beats, 
+            all_padded_resampled_labels, 
+            all_resampled_pre_rr, 
+            all_resampled_post_rr, 
+            all_resampled_avg_rr)
+
+def map_to_general_groups(label_vector):
+    general_group_mapping = {
+        "N": "N",  # Non-ectopic beats (N)
+        "L": "N",  
+        "R": "N",  
+        "j": "N", 
+        "e": "N",  
+        "A": "S",  # Supraventricular ectopic Beats (S)
+        "a": "S",  
+        "S": "S",  
+        "J": "S",  
+        "!": "V",  # Ventricular ectopic Beats (V)
+        "V": "V",  
+        "E": "V",  
+        "[": "V",  
+        "]": "V",  
+        "F": "F",  # Fusion Beats (F)
+        "f": "Q",  # Unknown beats (Q)
+        "/": "Q",  
+        "Q": "Q"   
+    }
+    return [general_group_mapping.get(beat, "Q") for beat in label_vector]
