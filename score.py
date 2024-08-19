@@ -33,8 +33,7 @@ if __name__ == '__main__':
     model = CNN_LSTM_Model(input_size=input_size, rr_feature_size=rr_feature_size, num_classes=num_classes)
     model.to(device)
 
-    alpha_values = [2.0, 0.8, 1.2, 1.0]
-    criterion = FocalLoss(alpha=alpha_values, gamma=2)
+    criterion = FocalLoss()
 
     model.load_state_dict(torch.load(os.path.join('checkpoints', 'best_model.pth'), map_location=device))
 
