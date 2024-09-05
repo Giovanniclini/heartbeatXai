@@ -58,23 +58,35 @@ The adopted model is a hybrid combination of CNN and LSTM designed to leverage b
 - score.py
 ```
 
+
 ## Results
 
-### Per-Class Accuracy
-- **Class 0**: 35.38%
-- **Class 1**: 74.89%
-- **Class 2**: 58.78%
-- **Class 3**: 92.66%
-
 ### Classification Report
-| Class  | Precision | Recall | F1-Score | Support |
-|--------|-----------|--------|----------|---------|
-| Class 0| 0.01      | 0.35   | 0.02     | 65      |
-| Class 1| 1.00      | 0.75   | 0.85     | 26731   |
-| Class 2| 0.32      | 0.59   | 0.42     | 905     |
-| Class 3| 0.46      | 0.93   | 0.62     | 3271    |
+              precision    recall  f1-score   support
 
-- **Test Loss**: 1.0136
+     Class 0       0.99      0.85      0.92     28065
+     Class 1       0.58      0.72      0.64      2297
+     Class 2       0.47      0.95      0.62      3271
+
+    accuracy                           0.85     33633
+   macro avg       0.68      0.84      0.73     33633
+weighted avg       0.91      0.85      0.87     33633
+
+Test Loss: 0.2076
+Test Accuracy: 0.8518
+
+### Explanation of Results
+
+- **Class 0** represents normal heartbeats.
+- **Class 1** represents supraventricular ectopic beats (SVEB).
+- **Class 2** represents ventricular ectopic beats (VEB).
+
+The model demonstrates high performance in identifying normal heartbeats (Class 0), with precision and recall scores of 0.99 and 0.85, respectively. However, there is a significant drop in precision for the arrhythmic classes, particularly Class 1 and Class 2.
+
+In a medical setting, low precision means that a considerable number of non-arrhythmic beats may be misclassified as arrhythmic. This could lead to unnecessary alarms or treatments. Therefore, improving precision, especially for these critical arrhythmia classes, is crucial to avoid misdiagnoses and ensure patient safety.
+
+Despite these challenges, the recall for Class 2 (VEB) is particularly high (0.95), indicating that the model is successful in identifying most arrhythmic beats, though it may generate more false positives.
+
 - **Test Accuracy**: 76.22%
 
 ![Confusion Matrix](./images/confusion_matrix_test.png)
