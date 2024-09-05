@@ -87,8 +87,6 @@ In a medical setting, low precision means that a considerable number of non-arrh
 
 Despite these challenges, the recall for Class 2 (VEB) is particularly high (0.95), indicating that the model is successful in identifying most arrhythmic beats, though it may generate more false positives.
 
-- **Test Accuracy**: 76.22%
-
 ![Confusion Matrix](./images/confusion_matrix_test.png)
 
 ## Setup
